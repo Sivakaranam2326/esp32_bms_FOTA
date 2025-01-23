@@ -15,7 +15,7 @@ bool balanceStatus = 0;
 #define NUM_READINGS 10
 
 // Firmware Version (current version of the firmware)
-const String currentFirmwareVersion = "1.0.0";  // Replace with the actual version of your firmware
+const String currentFirmwareVersion = "1.0.2";  // Replace with the actual version of your firmware
 
 // URL for firmware and version metadata
 const char* firmwareURL = "https://sivakaranam2326.github.io/esp32_bms_FOTA/ESP32_Thingspeak.ino.bin";
@@ -144,6 +144,7 @@ void checkBattChargeOrDischargeStatus(float cell[],float temp1) {
     else{
       // ideal mode
       ChargeFET(OFF);
+      DischargeFET(ON);
       OverVoltageCheck(cell);
       UnderVoltageCheck(cell);
       if(HighestVoltage <= 3.3)
@@ -199,6 +200,7 @@ void checkForUpdate() {
       updateFirmware();  // Proceed to firmware update if new version is found
     } else {
       Serial.println("Already on the latest version.");
+      Serial.println(newFirmwareVersion);
     }
   } else {
     Serial.println("Failed to fetch the firmware version. Skipping update check.");
@@ -261,6 +263,7 @@ void loop() {
   secCounter++;
   if (secCounter % 5 == 0) {
     dataUpdateToCloud(cell, packVoltage, temp1,balanceStatus);
+    Serial.println("Data updated to cloud");
   }
   else if(secCounter % 12 == 0){
     checkForUpdate();  // Call the check for update function
